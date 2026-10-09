@@ -5,9 +5,10 @@ import re
 from dataclasses import dataclass
 from typing import Callable
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-USER = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,38})$")
+USER = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,37}[A-Za-z0-9])?$")
 AGENT = "vesper/0.1 (+https://github.com/gabrielteramae/vesper)"
 
 
@@ -49,41 +50,45 @@ def _gitlab(status: int, body: str) -> str:
     return "unknown"
 
 
+def _path(username: str) -> str:
+    return quote(username, safe="")
+
+
 SITES: tuple[Site, ...] = (
     Site(
         "GitHub",
-        lambda u: f"https://github.com/{u}",
-        lambda u: f"https://api.github.com/users/{u}",
+        lambda u: f"https://github.com/{_path(u)}",
+        lambda u: f"https://api.github.com/users/{_path(u)}",
         _json_status(),
     ),
     Site(
         "GitLab",
-        lambda u: f"https://gitlab.com/{u}",
-        lambda u: f"https://gitlab.com/api/v4/users?username={u}",
+        lambda u: f"https://gitlab.com/{_path(u)}",
+        lambda u: f"https://gitlab.com/api/v4/users?username={_path(u)}",
         _gitlab,
     ),
     Site(
         "Codeberg",
-        lambda u: f"https://codeberg.org/{u}",
-        lambda u: f"https://codeberg.org/api/v1/users/{u}",
+        lambda u: f"https://codeberg.org/{_path(u)}",
+        lambda u: f"https://codeberg.org/api/v1/users/{_path(u)}",
         _json_status(),
     ),
     Site(
         "Hugging Face",
-        lambda u: f"https://huggingface.co/{u}",
-        lambda u: f"https://huggingface.co/api/users/{u}/overview",
+        lambda u: f"https://huggingface.co/{_path(u)}",
+        lambda u: f"https://huggingface.co/api/users/{_path(u)}/overview",
         _json_status(),
     ),
     Site(
         "npm",
-        lambda u: f"https://www.npmjs.com/~{u}",
-        lambda u: f"https://registry.npmjs.org/-/user/org.couchdb.user:{u}",
+        lambda u: f"https://www.npmjs.com/~{_path(u)}",
+        lambda u: f"https://registry.npmjs.org/-/user/org.couchdb.user:{_path(u)}",
         _json_status(),
     ),
     Site(
         "dev.to",
-        lambda u: f"https://dev.to/{u}",
-        lambda u: f"https://dev.to/api/users/by_username?url={u}",
+        lambda u: f"https://dev.to/{_path(u)}",
+        lambda u: f"https://dev.to/api/users/by_username?url={_path(u)}",
         _json_status(),
     ),
 )
