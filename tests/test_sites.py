@@ -12,6 +12,10 @@ class SiteTests(unittest.TestCase):
             normalize_username("a b")
         with self.assertRaises(ValueError):
             normalize_username("javascript:alert(1)")
+        with self.assertRaises(ValueError):
+            normalize_username("ada.")
+        with self.assertRaises(ValueError):
+            normalize_username("-ada")
 
     def test_gitlab_body(self):
         self.assertEqual(_gitlab(200, "[]"), "missing")
