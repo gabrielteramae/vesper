@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Confere se um username existe em sites públicos de desenvolvedor."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
 authors = [{ name = "Gabriel Teramae" }]
 dependencies = []
 
